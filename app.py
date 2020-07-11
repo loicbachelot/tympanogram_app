@@ -185,11 +185,12 @@ app.layout = html.Div(children=[
                         'padding': '5px',
                         'borderRadius': '5px',
                         'backgroundColor': 'white',
+                        'height': '80vh',
                     },
-                    animate=True,
+                    # animate=True,
                 )),
         ], style={
-            'margin': '5px'
+            'margin': '5px',
         }),
 ])
 
@@ -251,7 +252,12 @@ def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm):
                 bordercolor='black',
                 borderwidth=1
             )],
-        height=750,
+        yaxis=dict(
+            autorange=True,
+        ),
+        transition={
+            'duration': 500,
+        }
     )
     return fig
 
