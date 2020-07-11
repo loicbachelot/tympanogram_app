@@ -1,6 +1,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_auth
 import plotly.express as px
 import numpy as np
 import scipy
@@ -10,7 +11,16 @@ import dash_bootstrap_components as dbc
 
 PU_logo = 'https://www.lanecc.edu/sites/default/files/international/pacific_university_logo_400_wide.png'
 
+VALID_USERNAME_PASSWORD_PAIRS = {
+    'Pacific_test': 'pacific_1'
+}
+
 app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
+
+auth = dash_auth.BasicAuth(
+    app,
+    VALID_USERNAME_PASSWORD_PAIRS
+)
 
 server = app.server
 
@@ -265,4 +275,4 @@ def toggle_popover(n, is_open):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
