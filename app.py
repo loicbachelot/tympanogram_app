@@ -90,8 +90,8 @@ app.layout = html.Div(children=[
                                                  value=1.5,
                                                  type='number',
                                                  min=0,
-                                                 max=3,
-                                                 step=0.1,
+                                                 max=4,
+                                                 step=0.01,
                                              )]
                                         ),
                                         html.Br(),
@@ -102,8 +102,8 @@ app.layout = html.Div(children=[
                                                  value=1,
                                                  type='number',
                                                  min=0,
-                                                 max=3,
-                                                 step=0.1
+                                                 max=4,
+                                                 step=0.01
                                              )]
                                         )
                                     ])
@@ -117,8 +117,8 @@ app.layout = html.Div(children=[
                                                  id="TPP",
                                                  value=0,
                                                  type='number',
-                                                 min=-150,
-                                                 max=150,
+                                                 min=-350,
+                                                 max=200,
                                                  step=1
                                              )]
                                         ),
@@ -129,14 +129,30 @@ app.layout = html.Div(children=[
                                                  id="TW",
                                                  value=70,
                                                  type='number',
-                                                 min=20,
-                                                 max=300,
+                                                 min=2,
+                                                 max=399,
                                                  step=1,
                                              )]
                                         )]
                                     )
                                 )
                             ]),
+                        html.Br(),
+                        dbc.InputGroup(
+                            [dbc.InputGroupAddon("Negative pressure range", addon_type="prepend"),
+                             dbc.Input(
+                                 id="NPa",
+                                 value=-200,
+                                 type='number',
+                                 min=-400,
+                                 max=-200,
+                                 step=1,
+                             )], style={
+                                'width': '75%',
+                                'marginLeft': 'auto',
+                                'marginRight': 'auto'
+                            }
+                        ),
                         html.Br(),
                         dbc.Button("Draw graph", color="primary", block=True, id="button"),
                         html.Hr(style={
@@ -203,9 +219,10 @@ app.layout = html.Div(children=[
     [dash.dependencies.State('Vae', 'value'),
      dash.dependencies.State('TW', 'value'),
      dash.dependencies.State('TPP', 'value'),
-     dash.dependencies.State('Ytm', 'value')]
+     dash.dependencies.State('Ytm', 'value'),
+     dash.dependencies.State('NPa', 'value')]
 )
-def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm):
+def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm, npa):
     ##
     # computing the coordinates of the 5 points
     # x is the pressure
@@ -217,9 +234,9 @@ def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm):
     tymp_str = "<b>Compensated:</b><br>" + "Vea = " + str(vea) + "mmho<br>" + "Ytm = " + str(
         ytm) + "mmho<br>" + "TPP = " + str(tpp) + "daPa<br>" + "TW = " + str(tw) + "daPa<br>"
 
-    x = np.array([-200, (tpp - (tw // 2)), tpp, (tpp + (tw // 2)), 200])
+    x = np.array([npa, (tpp - (tw // 2)), tpp, (tpp + (tw // 2)), 200])
     y = np.array([0, (ytm / 2), ytm, (ytm / 2), 0])
-    xi = np.linspace(-200, 200, num=401, endpoint=True)
+    xi = np.linspace(npa, 200, num=401, endpoint=True)
 
     rbf = Rbf(x, y, function="multiquadric", epsilon=epsilon)
 
