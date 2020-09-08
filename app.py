@@ -78,6 +78,9 @@ app.layout = html.Div(children=[
                 html.Div(
                     # from on the left
                     dbc.Jumbotron([
+                        dbc.Alert("The limits for each field are not set for development purposes. This can lead to "
+                                  "mathematical errors if not properly used. Please double check your values if not "
+                                  "working. ", color="info"),
                         html.H2('Tympanogram values'),
                         dbc.Row(
                             [
