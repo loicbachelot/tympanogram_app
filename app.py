@@ -11,18 +11,249 @@ import dash_bootstrap_components as dbc
 
 PU_logo = 'https://www.lanecc.edu/sites/default/files/international/pacific_university_logo_400_wide.png'
 
-VALID_USERNAME_PASSWORD_PAIRS = {
-    'Pacific_test': 'pacific_1'
-}
-
 app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
 
-auth = dash_auth.BasicAuth(
-    app,
-    VALID_USERNAME_PASSWORD_PAIRS
-)
-
 server = app.server
+
+form_left = dbc.Jumbotron([
+    dbc.Alert("The limits for each field are still in discussion. This can lead to "
+              "mathematical errors if not properly used. Please double check your values if not "
+              "working. ", color="info"),
+    html.H2('Tympanogram values'),
+    dbc.Row(
+        [
+            dbc.Col(
+                html.Div([
+                    dbc.InputGroup(
+                        [dbc.InputGroupAddon("Vea", addon_type="prepend"),
+                         dbc.Input(
+                             id="Vae_left",
+                             value=1.5,
+                             type='number',
+                             min=0,
+                             max=4,
+                             step=0.01,
+                         )]
+                    ),
+                    html.Br(),
+                    dbc.InputGroup(
+                        [dbc.InputGroupAddon("Ytm", addon_type="prepend"),
+                         dbc.Input(
+                             id="Ytm_left",
+                             value=1,
+                             type='number',
+                             min=0,
+                             max=4,
+                             step=0.01
+                         )]
+                    )
+                ])
+            ),
+
+            dbc.Col(
+                html.Div([
+                    dbc.InputGroup(
+                        [dbc.InputGroupAddon("TPP", addon_type="prepend"),
+                         dbc.Input(
+                             id="TPP_left",
+                             value=0,
+                             type='number',
+                             min=-398,
+                             max=198,
+                             step=1
+                         )]
+                    ),
+                    html.Br(),
+                    dbc.InputGroup(
+                        [dbc.InputGroupAddon("TW", addon_type="prepend"),
+                         dbc.Input(
+                             id="TW_left",
+                             value=70,
+                             type='number',
+                             min=2,
+                             max=399,
+                             step=1,
+                         )]
+                    )]
+                )
+            )
+        ]),
+    html.Br(),
+    dbc.InputGroup(
+        [dbc.InputGroupAddon("Negative pressure range", addon_type="prepend"),
+         dbc.Input(
+             id="NPa_left",
+             value=-200,
+             type='number',
+             min=-400,
+             max=-200,
+             step=1,
+         )], style={
+            'width': '75%',
+            'marginLeft': 'auto',
+            'marginRight': 'auto'
+        }
+    ),
+    html.Br(),
+    dbc.Button("Draw graph", color="primary", block=True, id="button_left"),
+    html.Hr(style={
+        'height': '2px',
+        'backgroundColor': 'lightgray',
+        'border': 'none',
+    }),
+    html.Div(
+        id='epsilon-selector-left',
+        children=[
+            html.H2('Epsilon Selector'),
+            html.Label('Epsilon is used to compute the curve with the following formula:'),
+            html.Br(),
+            html.Label('sqrt((r/self.epsilon)**2 + 1)', style={
+                'font': 'italic small-caps bold 15px/25px Georgia, serif',
+            }),
+            html.Br(),
+            html.Label(
+                'Modifying the Epsilon value will modify the aspect of the curve,'
+                'but will not change the values entered.'
+                'By default it is 25 but for some more extreme values the curve can be not realist. '
+                'Play with it to get the most realistic curve.'),
+            dcc.Slider(
+                id='epsilon_left',
+                min=1,
+                max=75,
+                value=25,
+                updatemode='drag',
+            ),
+            html.Div(id='slider-output-container-left'),
+        ], style={
+            'padding': '5px',
+            'margin': 'auto',
+            'textAlign': 'center',
+        })
+
+], style={
+    'marginTop': '10px',
+    'backgroundColor': '#404040'
+})
+
+form_right = dbc.Jumbotron([
+    dbc.Alert("The limits for each field are still in discussion. This can lead to "
+              "mathematical errors if not properly used. Please double check your values if not "
+              "working. ", color="info"),
+    html.H2('Tympanogram values'),
+    dbc.Row(
+        [
+            dbc.Col(
+                html.Div([
+                    dbc.InputGroup(
+                        [dbc.InputGroupAddon("Vea", addon_type="prepend"),
+                         dbc.Input(
+                             id="Vae_right",
+                             value=1.5,
+                             type='number',
+                             min=0,
+                             max=4,
+                             step=0.01,
+                         )]
+                    ),
+                    html.Br(),
+                    dbc.InputGroup(
+                        [dbc.InputGroupAddon("Ytm", addon_type="prepend"),
+                         dbc.Input(
+                             id="Ytm_right",
+                             value=1,
+                             type='number',
+                             min=0,
+                             max=4,
+                             step=0.01
+                         )]
+                    )
+                ])
+            ),
+
+            dbc.Col(
+                html.Div([
+                    dbc.InputGroup(
+                        [dbc.InputGroupAddon("TPP", addon_type="prepend"),
+                         dbc.Input(
+                             id="TPP_right",
+                             value=0,
+                             type='number',
+                             min=-398,
+                             max=198,
+                             step=1
+                         )]
+                    ),
+                    html.Br(),
+                    dbc.InputGroup(
+                        [dbc.InputGroupAddon("TW", addon_type="prepend"),
+                         dbc.Input(
+                             id="TW_right",
+                             value=70,
+                             type='number',
+                             min=2,
+                             max=399,
+                             step=1,
+                         )]
+                    )]
+                )
+            )
+        ]),
+    html.Br(),
+    dbc.InputGroup(
+        [dbc.InputGroupAddon("Negative pressure range", addon_type="prepend"),
+         dbc.Input(
+             id="NPa_right",
+             value=-200,
+             type='number',
+             min=-400,
+             max=-200,
+             step=1,
+         )], style={
+            'width': '75%',
+            'marginLeft': 'auto',
+            'marginRight': 'auto'
+        }
+    ),
+    html.Br(),
+    dbc.Button("Draw graph", color="primary", block=True, id="button_right"),
+    html.Hr(style={
+        'height': '2px',
+        'backgroundColor': 'lightgray',
+        'border': 'none',
+    }),
+    html.Div(
+        id='epsilon-selector-right',
+        children=[
+            html.H2('Epsilon Selector'),
+            html.Label('Epsilon is used to compute the curve with the following formula:'),
+            html.Br(),
+            html.Label('sqrt((r/self.epsilon)**2 + 1)', style={
+                'font': 'italic small-caps bold 15px/25px Georgia, serif',
+            }),
+            html.Br(),
+            html.Label(
+                'Modifying the Epsilon value will modify the aspect of the curve,'
+                'but will not change the values entered.'
+                'By default it is 25 but for some more extreme values the curve can be not realist. '
+                'Play with it to get the most realistic curve.'),
+            dcc.Slider(
+                id='epsilon_right',
+                min=1,
+                max=75,
+                value=25,
+                updatemode='drag',
+            ),
+            html.Div(id='slider-output-container-right'),
+        ], style={
+            'padding': '5px',
+            'margin': 'auto',
+            'textAlign': 'center',
+        })
+
+], style={
+    'marginTop': '10px',
+    'backgroundColor': '#404040'
+})
 
 app.layout = html.Div(children=[
     dbc.Navbar(
@@ -76,126 +307,12 @@ app.layout = html.Div(children=[
         [
             dbc.Col(
                 html.Div(
-                    # from on the left
-                    dbc.Jumbotron([
-                        dbc.Alert("The limits for each field are not set for development purposes. This can lead to "
-                                  "mathematical errors if not properly used. Please double check your values if not "
-                                  "working. ", color="info"),
-                        html.H2('Tympanogram values'),
-                        dbc.Row(
-                            [
-                                dbc.Col(
-                                    html.Div([
-                                        dbc.InputGroup(
-                                            [dbc.InputGroupAddon("Vea", addon_type="prepend"),
-                                             dbc.Input(
-                                                 id="Vae",
-                                                 value=1.5,
-                                                 type='number',
-                                                 min=0,
-                                                 max=4,
-                                                 step=0.01,
-                                             )]
-                                        ),
-                                        html.Br(),
-                                        dbc.InputGroup(
-                                            [dbc.InputGroupAddon("Ytm", addon_type="prepend"),
-                                             dbc.Input(
-                                                 id="Ytm",
-                                                 value=1,
-                                                 type='number',
-                                                 min=0,
-                                                 max=4,
-                                                 step=0.01
-                                             )]
-                                        )
-                                    ])
-                                ),
-
-                                dbc.Col(
-                                    html.Div([
-                                        dbc.InputGroup(
-                                            [dbc.InputGroupAddon("TPP", addon_type="prepend"),
-                                             dbc.Input(
-                                                 id="TPP",
-                                                 value=0,
-                                                 type='number',
-                                                 min=-350,
-                                                 max=200,
-                                                 step=1
-                                             )]
-                                        ),
-                                        html.Br(),
-                                        dbc.InputGroup(
-                                            [dbc.InputGroupAddon("TW", addon_type="prepend"),
-                                             dbc.Input(
-                                                 id="TW",
-                                                 value=70,
-                                                 type='number',
-                                                 min=2,
-                                                 max=399,
-                                                 step=1,
-                                             )]
-                                        )]
-                                    )
-                                )
-                            ]),
-                        html.Br(),
-                        dbc.InputGroup(
-                            [dbc.InputGroupAddon("Negative pressure range", addon_type="prepend"),
-                             dbc.Input(
-                                 id="NPa",
-                                 value=-200,
-                                 type='number',
-                                 min=-400,
-                                 max=-200,
-                                 step=1,
-                             )], style={
-                                'width': '75%',
-                                'marginLeft': 'auto',
-                                'marginRight': 'auto'
-                            }
-                        ),
-                        html.Br(),
-                        dbc.Button("Draw graph", color="primary", block=True, id="button"),
-                        html.Hr(style={
-                            'height': '2px',
-                            'backgroundColor': 'lightgray',
-                            'border': 'none',
-                        }),
-                        html.Div(
-                            id='epsilon-selector',
-                            children=[
-                                html.H2('Epsilon Selector'),
-                                html.Label('Epsilon is used to compute the curve with the following formula:'),
-                                html.Br(),
-                                html.Label('sqrt((r/self.epsilon)**2 + 1)', style={
-                                    'font': 'italic small-caps bold 15px/25px Georgia, serif',
-                                }),
-                                html.Br(),
-                                html.Label(
-                                    'Modifying the Epsilon value will modify the aspect of the curve,'
-                                    'but will not change the values entered.'
-                                    'By default it is 25 but for some more extreme values the curve can be not realist. '
-                                    'Play with it to get the most realistic curve.'),
-                                dcc.Slider(
-                                    id='epsilon',
-                                    min=1,
-                                    max=75,
-                                    value=25,
-                                    updatemode='drag',
-                                ),
-                                html.Div(id='slider-output-container'),
-                            ], style={
-                                'padding': '5px',
-                                'margin': 'auto',
-                                'textAlign': 'center',
-                            })
-
-                    ], style={
-                        'marginTop': '10px',
-                        'backgroundColor': '#404040'
-                    })), width=4),
+                    dbc.Tabs(
+                        [
+                            dbc.Tab(form_left, label="left ear"),
+                            # dbc.Tab(form_right, label="right ear")
+                        ])
+                ), width=4),
             dbc.Col(
                 dcc.Graph(
                     id='tympanogram-graph',
@@ -206,8 +323,8 @@ app.layout = html.Div(children=[
                         'backgroundColor': 'white',
                         'height': '80vh',
                     },
-                    # animate=True,
-                )),
+                ),
+            ),
         ], style={
             'margin': '5px',
         }),
@@ -216,14 +333,13 @@ app.layout = html.Div(children=[
 
 @app.callback(
     dash.dependencies.Output('tympanogram-graph', 'figure'),
-    [dash.dependencies.Input('button', 'n_clicks'),
-
-     dash.dependencies.Input('epsilon', 'value')],
-    [dash.dependencies.State('Vae', 'value'),
-     dash.dependencies.State('TW', 'value'),
-     dash.dependencies.State('TPP', 'value'),
-     dash.dependencies.State('Ytm', 'value'),
-     dash.dependencies.State('NPa', 'value')]
+    [dash.dependencies.Input('button_left', 'n_clicks'),
+     dash.dependencies.Input('epsilon_left', 'value')],
+    [dash.dependencies.State('Vae_left', 'value'),
+     dash.dependencies.State('TW_left', 'value'),
+     dash.dependencies.State('TPP_left', 'value'),
+     dash.dependencies.State('Ytm_left', 'value'),
+     dash.dependencies.State('NPa_left', 'value')]
 )
 def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm, npa):
     ##
@@ -233,12 +349,24 @@ def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm, npa):
     # xi is the full range
     ##
 
-    # verification of the inputs:
+    pa_min = 0
+    pa_max = 0
+    twl = tpp - (tw // 2)
+    twr = tpp + (tw // 2)
+    if twl <= npa:
+        twl = npa + 1
+        pa_min = ytm / 2
+
+    if twr >= 200:
+        twr = 199
+        pa_max = ytm / 2
+
+    # writing the values
     tymp_str = "<b>Compensated:</b><br>" + "Vea = " + str(vea) + "mmho<br>" + "Ytm = " + str(
         ytm) + "mmho<br>" + "TPP = " + str(tpp) + "daPa<br>" + "TW = " + str(tw) + "daPa<br>"
 
-    x = np.array([npa, (tpp - (tw // 2)), tpp, (tpp + (tw // 2)), 200])
-    y = np.array([0, (ytm / 2), ytm, (ytm / 2), 0])
+    x = np.array([npa, twl, tpp, twr, 200])
+    y = np.array([pa_min, (ytm / 2), ytm, (ytm / 2), pa_max])
     xi = np.linspace(npa, 200, num=401, endpoint=True)
 
     rbf = Rbf(x, y, function="multiquadric", epsilon=epsilon)
@@ -273,7 +401,8 @@ def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm, npa):
                 borderwidth=1
             )],
         yaxis=dict(
-            autorange=True,
+            range=[-0.2, 3],
+            autorange=False,
         ),
         transition={
             'duration': 500,
@@ -283,10 +412,16 @@ def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm, npa):
 
 
 @app.callback(
-    dash.dependencies.Output('slider-output-container', 'children'),
-    [dash.dependencies.Input('epsilon', 'value')])
+    dash.dependencies.Output('slider-output-container-left', 'children'),
+    [dash.dependencies.Input('epsilon_left', 'value')])
 def update_output(value):
     return 'Current epsilon is "{}"'.format(value)
+
+# @app.callback(
+#     dash.dependencies.Output('slider-output-container-right', 'children'),
+#     [dash.dependencies.Input('epsilon_right', 'value')])
+# def update_output(value):
+#     return 'Current epsilon is "{}"'.format(value)
 
 
 @app.callback(
