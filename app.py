@@ -376,8 +376,10 @@ def update_graph(n_clicks, epsilon_l, epsilon_r, vea_l, tw_l, tpp_l, ytm_l, vea_
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=xi_l, y=rbf_l(xi_l), mode='lines', name='Left ear'))
     fig.add_trace(go.Scatter(x=xi_r, y=rbf_r(xi_r), mode='lines', name='Right ear'))
-    fig.add_trace(go.Scatter(x=x_l, y=y_l, mode='markers', name='Left ear input', marker=dict(size=8), showlegend=False))
-    fig.add_trace(go.Scatter(x=x_r, y=y_r, mode='markers', name='Right ear input', marker=dict(size=8), showlegend=False))
+    fig.add_trace(
+        go.Scatter(x=x_l, y=y_l, mode='markers', name='Left ear input', marker=dict(size=8), showlegend=False))
+    fig.add_trace(
+        go.Scatter(x=x_r, y=y_r, mode='markers', name='Right ear input', marker=dict(size=8), showlegend=False))
 
     fig.update_layout(
         title={
@@ -425,10 +427,12 @@ def update_graph(n_clicks, epsilon_l, epsilon_r, vea_l, tw_l, tpp_l, ytm_l, vea_
             title="Admittance (mmhos)"
         ),
         xaxis_title="Air pressure (daPa)",
-        transition={
-            'duration': 500,
-        }
+
+        # transition={ #transition isn't compatible with updating the annotations yet
+        #     'duration': 500,
+        # }
     )
+
     return fig
 
 
