@@ -1,11 +1,8 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_auth
-import plotly.express as px
+import plotly.graph_objects as go
 import numpy as np
-import scipy
-from scipy import interpolate
 from scipy.interpolate import Rbf
 import dash_bootstrap_components as dbc
 
@@ -15,11 +12,8 @@ app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
 
 server = app.server
 
-form_left = dbc.Jumbotron([
-    dbc.Alert("The limits for each field are still in discussion. This can lead to "
-              "mathematical errors if not properly used. Please double check your values if not "
-              "working. ", color="info"),
-    html.H2('Tympanogram values'),
+form_left = html.Div([
+    html.H4('Tympanogram values for the left ear'),
     dbc.Row(
         [
             dbc.Col(
@@ -56,7 +50,7 @@ form_left = dbc.Jumbotron([
                         [dbc.InputGroupAddon("TPP", addon_type="prepend"),
                          dbc.Input(
                              id="TPP_left",
-                             value=0,
+                             value=-10,
                              type='number',
                              min=-398,
                              max=198,
@@ -79,32 +73,10 @@ form_left = dbc.Jumbotron([
             )
         ]),
     html.Br(),
-    dbc.InputGroup(
-        [dbc.InputGroupAddon("Negative pressure range", addon_type="prepend"),
-         dbc.Input(
-             id="NPa_left",
-             value=-200,
-             type='number',
-             min=-400,
-             max=-200,
-             step=1,
-         )], style={
-            'width': '75%',
-            'marginLeft': 'auto',
-            'marginRight': 'auto'
-        }
-    ),
-    html.Br(),
-    dbc.Button("Draw graph", color="primary", block=True, id="button_left"),
-    html.Hr(style={
-        'height': '2px',
-        'backgroundColor': 'lightgray',
-        'border': 'none',
-    }),
     html.Div(
         id='epsilon-selector-left',
         children=[
-            html.H2('Epsilon Selector'),
+            html.H4('Epsilon selector left ear'),
             html.Label('Epsilon is used to compute the curve with the following formula:'),
             html.Br(),
             html.Label('sqrt((r/self.epsilon)**2 + 1)', style={
@@ -113,7 +85,7 @@ form_left = dbc.Jumbotron([
             html.Br(),
             html.Label(
                 'Modifying the Epsilon value will modify the aspect of the curve,'
-                'but will not change the values entered.'
+                'but will not change the values entered. '
                 'By default it is 25 but for some more extreme values the curve can be not realist. '
                 'Play with it to get the most realistic curve.'),
             dcc.Slider(
@@ -130,16 +102,10 @@ form_left = dbc.Jumbotron([
             'textAlign': 'center',
         })
 
-], style={
-    'marginTop': '10px',
-    'backgroundColor': '#404040'
-})
+])
 
-form_right = dbc.Jumbotron([
-    dbc.Alert("The limits for each field are still in discussion. This can lead to "
-              "mathematical errors if not properly used. Please double check your values if not "
-              "working. ", color="info"),
-    html.H2('Tympanogram values'),
+form_right = html.Div([
+    html.H4('Tympanogram values for the right ear'),
     dbc.Row(
         [
             dbc.Col(
@@ -176,7 +142,7 @@ form_right = dbc.Jumbotron([
                         [dbc.InputGroupAddon("TPP", addon_type="prepend"),
                          dbc.Input(
                              id="TPP_right",
-                             value=0,
+                             value=10,
                              type='number',
                              min=-398,
                              max=198,
@@ -199,32 +165,10 @@ form_right = dbc.Jumbotron([
             )
         ]),
     html.Br(),
-    dbc.InputGroup(
-        [dbc.InputGroupAddon("Negative pressure range", addon_type="prepend"),
-         dbc.Input(
-             id="NPa_right",
-             value=-200,
-             type='number',
-             min=-400,
-             max=-200,
-             step=1,
-         )], style={
-            'width': '75%',
-            'marginLeft': 'auto',
-            'marginRight': 'auto'
-        }
-    ),
-    html.Br(),
-    dbc.Button("Draw graph", color="primary", block=True, id="button_right"),
-    html.Hr(style={
-        'height': '2px',
-        'backgroundColor': 'lightgray',
-        'border': 'none',
-    }),
     html.Div(
         id='epsilon-selector-right',
         children=[
-            html.H2('Epsilon Selector'),
+            html.H4('Epsilon selector right ear'),
             html.Label('Epsilon is used to compute the curve with the following formula:'),
             html.Br(),
             html.Label('sqrt((r/self.epsilon)**2 + 1)', style={
@@ -233,7 +177,7 @@ form_right = dbc.Jumbotron([
             html.Br(),
             html.Label(
                 'Modifying the Epsilon value will modify the aspect of the curve,'
-                'but will not change the values entered.'
+                'but will not change the values entered. '
                 'By default it is 25 but for some more extreme values the curve can be not realist. '
                 'Play with it to get the most realistic curve.'),
             dcc.Slider(
@@ -248,12 +192,8 @@ form_right = dbc.Jumbotron([
             'padding': '5px',
             'margin': 'auto',
             'textAlign': 'center',
-        })
-
-], style={
-    'marginTop': '10px',
-    'backgroundColor': '#404040'
-})
+        }),
+])
 
 app.layout = html.Div(children=[
     dbc.Navbar(
@@ -284,8 +224,8 @@ app.layout = html.Div(children=[
                             [
                                 dbc.PopoverHeader("About this tool"),
                                 dbc.PopoverBody(
-                                    "Tympanogram creator tool built in collaboration between Cassidy Holbrook, "
-                                    "Dr. David Brown from Pacific University of Audiology and Loïc Bachelot"),
+                                    "Tympanogram creator tool built in collaboration between Dr. David Brown,"
+                                    " Cassidy Holbrook from Pacific University of Audiology and Loïc Bachelot"),
                             ],
                             id="popover",
                             is_open=False,
@@ -306,24 +246,57 @@ app.layout = html.Div(children=[
     dbc.Row(
         [
             dbc.Col(
-                html.Div(
-                    dbc.Tabs(
-                        [
-                            dbc.Tab(form_left, label="left ear"),
-                            # dbc.Tab(form_right, label="right ear")
-                        ])
-                ), width=4),
+                html.Div([
+                    dbc.Jumbotron([
+                        dbc.Alert("The limits for each field are still in discussion. This can lead to "
+                                  "mathematical errors if not properly used. Please double check your values if not "
+                                  "working. ", color="info"),
+                        dbc.Tabs(
+                            [
+                                dbc.Tab(form_left, label="Left ear"),
+                                dbc.Tab(form_right, label="Right ear", tab_style={
+                                    "margin-left": "auto"})
+                            ]),
+                        html.Hr(style={
+                            'height': '2px',
+                            'backgroundColor': 'lightgray',
+                            'border': 'none',
+                        }),
+                        dbc.InputGroup(
+                            [dbc.InputGroupAddon("Negative pressure range", addon_type="prepend"),
+                             dbc.Input(
+                                 id="NPa",
+                                 value=-200,
+                                 type='number',
+                                 min=-400,
+                                 max=-200,
+                                 step=1,
+                             )], style={
+                                'width': '75%',
+                                'marginLeft': 'auto',
+                                'marginRight': 'auto'
+                            }
+                        ),
+                        dbc.Button("Draw graph", color="primary", block=True, id="button"),
+                    ], style={
+                        'marginTop': '5px',
+                        'backgroundColor': '#404040'
+                    }),
+                ]), width=4),
             dbc.Col(
-                dcc.Graph(
-                    id='tympanogram-graph',
-                    style={
-                        'marginTop': '10px',
-                        'padding': '5px',
-                        'borderRadius': '5px',
-                        'backgroundColor': 'white',
-                        'height': '80vh',
-                    },
-                ),
+                html.Div([
+                    dcc.Graph(
+                        id='tympanogram-graph',
+                        style={
+                            'marginTop': '10px',
+                            'padding': '5px',
+                            'borderRadius': '5px',
+                            'backgroundColor': 'white',
+                            'height': '80vh',
+                        },
+                    ),
+                ])
+
             ),
         ], style={
             'margin': '5px',
@@ -333,15 +306,20 @@ app.layout = html.Div(children=[
 
 @app.callback(
     dash.dependencies.Output('tympanogram-graph', 'figure'),
-    [dash.dependencies.Input('button_left', 'n_clicks'),
-     dash.dependencies.Input('epsilon_left', 'value')],
+    [dash.dependencies.Input('button', 'n_clicks'),
+     dash.dependencies.Input('epsilon_left', 'value'),
+     dash.dependencies.Input('epsilon_right', 'value')],
     [dash.dependencies.State('Vae_left', 'value'),
      dash.dependencies.State('TW_left', 'value'),
      dash.dependencies.State('TPP_left', 'value'),
      dash.dependencies.State('Ytm_left', 'value'),
-     dash.dependencies.State('NPa_left', 'value')]
+     dash.dependencies.State('Vae_right', 'value'),
+     dash.dependencies.State('TW_right', 'value'),
+     dash.dependencies.State('TPP_right', 'value'),
+     dash.dependencies.State('Ytm_right', 'value'),
+     dash.dependencies.State('NPa', 'value')]
 )
-def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm, npa):
+def update_graph(n_clicks, epsilon_l, epsilon_r, vea_l, tw_l, tpp_l, ytm_l, vea_r, tw_r, tpp_r, ytm_r, npa):
     ##
     # computing the coordinates of the 5 points
     # x is the pressure
@@ -349,34 +327,57 @@ def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm, npa):
     # xi is the full range
     ##
 
-    pa_min = 0
-    pa_max = 0
-    twl = tpp - (tw // 2)
-    twr = tpp + (tw // 2)
-    if twl <= npa:
-        twl = npa + 1
-        pa_min = ytm / 2
+    # computing the left ear
+    pa_min_l = 0
+    pa_max_l = 0
+    tw_min_l = tpp_l - (tw_l // 2)
+    tw_max_l = tpp_l + (tw_l // 2)
+    if tw_min_l <= npa:
+        tw_min_l = npa + 1
+        pa_min_l = ytm_l / 2
 
-    if twr >= 200:
-        twr = 199
-        pa_max = ytm / 2
+    if tw_max_l >= 200:
+        tw_max_l = 199
+        pa_max_l = ytm_l / 2
 
     # writing the values
-    tymp_str = "<b>Compensated:</b><br>" + "Vea = " + str(vea) + "mmho<br>" + "Ytm = " + str(
-        ytm) + "mmho<br>" + "TPP = " + str(tpp) + "daPa<br>" + "TW = " + str(tw) + "daPa<br>"
+    tymp_str_l = "<b>Compensated left ear:</b><br>" + "Vea = " + str(vea_l) + "mmho<br>" + "Ytm = " + str(
+        ytm_l) + "mmho<br>" + "TPP = " + str(tpp_l) + "daPa<br>" + "TW = " + str(tw_l) + "daPa<br>"
 
-    x = np.array([npa, twl, tpp, twr, 200])
-    y = np.array([pa_min, (ytm / 2), ytm, (ytm / 2), pa_max])
-    xi = np.linspace(npa, 200, num=401, endpoint=True)
+    x_l = np.array([npa, tw_min_l, tpp_l, tw_max_l, 200])
+    y_l = np.array([pa_min_l, (ytm_l / 2), ytm_l, (ytm_l / 2), pa_max_l])
+    xi_l = np.linspace(npa, 200, num=(200 - npa) + 1, endpoint=True)
 
-    rbf = Rbf(x, y, function="multiquadric", epsilon=epsilon)
+    rbf_l = Rbf(x_l, y_l, function="multiquadric", epsilon=epsilon_l)
 
-    fig = px.line(x=xi, y=rbf(xi), labels={
-        'x': "Air pressure (daPa)",
-        'y': "Admittance (mmhos)"
-    }, render_mode="svg")
+    # computing the right ear
+    pa_min_r = 0
+    pa_max_r = 0
+    tw_min_r = tpp_r - (tw_r // 2)
+    tw_max_r = tpp_r + (tw_r // 2)
+    if tw_min_r <= npa:
+        tw_min_r = npa + 1
+        pa_min_r = ytm_r / 2
 
-    fig.add_scatter(x=x, y=y, mode='markers', name="Data")
+    if tw_max_r >= 200:
+        tw_max_r = 199
+        pa_max_r = ytm_r / 2
+
+    # writing the values
+    tymp_str_r = "<b>Compensated right ear:</b><br>" + "Vea = " + str(vea_r) + "mmho<br>" + "Ytm = " + str(
+        ytm_r) + "mmho<br>" + "TPP = " + str(tpp_r) + "daPa<br>" + "TW = " + str(tw_r) + "daPa<br>"
+
+    x_r = np.array([npa, tw_min_r, tpp_r, tw_max_r, 200])
+    y_r = np.array([pa_min_r, (ytm_r / 2), ytm_r, (ytm_r / 2), pa_max_r])
+    xi_r = np.linspace(npa, 200, num=(200 - npa) + 1, endpoint=True)
+
+    rbf_r = Rbf(x_r, y_r, function="multiquadric", epsilon=epsilon_r)
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=xi_l, y=rbf_l(xi_l), mode='lines', name='Left ear'))
+    fig.add_trace(go.Scatter(x=xi_r, y=rbf_r(xi_r), mode='lines', name='Right ear'))
+    fig.add_trace(go.Scatter(x=x_l, y=y_l, mode='markers', name='Left ear input', marker=dict(size=8), showlegend=False))
+    fig.add_trace(go.Scatter(x=x_r, y=y_r, mode='markers', name='Right ear input', marker=dict(size=8), showlegend=False))
 
     fig.update_layout(
         title={
@@ -388,22 +389,42 @@ def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm, npa):
             'font': dict(
                 size=25)
         },
-        showlegend=False,
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="right",
+            x=1
+        ),
         annotations=[
             dict(
-                x=0.9,
+                x=0.1,
                 y=0.9,
                 showarrow=False,
-                text=tymp_str,
+                text=tymp_str_l,
                 xref="paper",
                 yref="paper",
                 bordercolor='black',
                 borderwidth=1
-            )],
+            ),
+            dict(
+                x=0.9,
+                y=0.9,
+                showarrow=False,
+                text=tymp_str_r,
+                xref="paper",
+                yref="paper",
+                bordercolor='black',
+                borderwidth=1
+            )
+        ],
         yaxis=dict(
             range=[-0.2, 3],
             autorange=False,
+            title="Admittance (mmhos)"
         ),
+        xaxis_title="Air pressure (daPa)",
         transition={
             'duration': 500,
         }
@@ -417,11 +438,12 @@ def update_graph(n_clicks, epsilon, vea, tw, tpp, ytm, npa):
 def update_output(value):
     return 'Current epsilon is "{}"'.format(value)
 
-# @app.callback(
-#     dash.dependencies.Output('slider-output-container-right', 'children'),
-#     [dash.dependencies.Input('epsilon_right', 'value')])
-# def update_output(value):
-#     return 'Current epsilon is "{}"'.format(value)
+
+@app.callback(
+    dash.dependencies.Output('slider-output-container-right', 'children'),
+    [dash.dependencies.Input('epsilon_right', 'value')])
+def update_output(value):
+    return 'Current epsilon is "{}"'.format(value)
 
 
 @app.callback(
