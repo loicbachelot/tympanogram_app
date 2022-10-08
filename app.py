@@ -1,25 +1,34 @@
 import dash
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
+from dash import html
 import plotly.graph_objects as go
 import numpy as np
 from scipy.interpolate import Rbf
 import dash_bootstrap_components as dbc
 
-PU_logo = 'https://www.lanecc.edu/sites/default/files/international/pacific_university_logo_400_wide.png'
+PU_logo = 'https://www.pacificu.edu/sites/all/themes/Pacific2022/images/Logo_Black_And_Red.svg'
 
-app = dash.Dash(external_stylesheets=[dbc.themes.DARKLY])
+app = dash.Dash(
+    external_stylesheets=[dbc.themes.DARKLY],
+    meta_tags=[
+        {
+            "name": "viewport",
+            "content": "width=device-width, initial-scale=1, maximum-scale=1",
+        }
+    ],
+)
 
 server = app.server
 
 form_left = html.Div([
-    html.H4('Tympanogram values for the left ear'),
+    html.H4('Tympanogram values for the left ear',
+            style={"fontSize":"1.7vw"}),
     dbc.Row(
         [
             dbc.Col(
                 html.Div([
                     dbc.InputGroup(
-                        [dbc.InputGroupAddon("Vea", addon_type="prepend"),
+                        [dbc.InputGroupText("Vea"),
                          dbc.Input(
                              id="Vae_left",
                              value=1.5,
@@ -31,7 +40,7 @@ form_left = html.Div([
                     ),
                     html.Br(),
                     dbc.InputGroup(
-                        [dbc.InputGroupAddon("Ytm", addon_type="prepend"),
+                        [dbc.InputGroupText("Ytm"),
                          dbc.Input(
                              id="Ytm_left",
                              value=1,
@@ -47,7 +56,7 @@ form_left = html.Div([
             dbc.Col(
                 html.Div([
                     dbc.InputGroup(
-                        [dbc.InputGroupAddon("TPP", addon_type="prepend"),
+                        [dbc.InputGroupText("TPP"),
                          dbc.Input(
                              id="TPP_left",
                              value=-10,
@@ -59,7 +68,7 @@ form_left = html.Div([
                     ),
                     html.Br(),
                     dbc.InputGroup(
-                        [dbc.InputGroupAddon("TW", addon_type="prepend"),
+                        [dbc.InputGroupText("TW"),
                          dbc.Input(
                              id="TW_left",
                              value=70,
@@ -76,18 +85,19 @@ form_left = html.Div([
     html.Div(
         id='epsilon-selector-left',
         children=[
-            html.H4('Epsilon selector left ear'),
-            html.Label('Epsilon is used to compute the curve with the following formula:'),
+            html.H4('Epsilon selector left ear', style={"fontSize":"1.7vw"}),
+            html.Label('Epsilon is used to compute the curve with the following formula:', style={"fontSize":"0.9vw"}),
             html.Br(),
             html.Label('sqrt((r/self.epsilon)**2 + 1)', style={
                 'font': 'italic small-caps bold 15px/25px Georgia, serif',
+                "fontSize":"1.2vw"
             }),
             html.Br(),
             html.Label(
-                'Modifying the Epsilon value will modify the aspect of the curve,'
+                'Modifying the Epsilon value will modify the aspect of the curve, '
                 'but will not change the values entered. '
-                'By default it is 25 but for some more extreme values the curve can be not realist. '
-                'Play with it to get the most realistic curve.'),
+                'Default is 25 but for some more extreme values, you might need to '
+                'play with it to get the most realistic curve.', style={"fontSize":"0.9vw"}),
             dcc.Slider(
                 id='epsilon_left',
                 min=1,
@@ -95,7 +105,7 @@ form_left = html.Div([
                 value=25,
                 updatemode='drag',
             ),
-            html.Div(id='slider-output-container-left'),
+            html.Div(id='slider-output-container-left', style={"fontSize":"1.2vw"}),
         ], style={
             'padding': '5px',
             'margin': 'auto',
@@ -105,13 +115,13 @@ form_left = html.Div([
 ])
 
 form_right = html.Div([
-    html.H4('Tympanogram values for the right ear'),
+    html.H4('Tympanogram values for the right ear', style={"fontSize":"1.7vw"}),
     dbc.Row(
         [
             dbc.Col(
                 html.Div([
                     dbc.InputGroup(
-                        [dbc.InputGroupAddon("Vea", addon_type="prepend"),
+                        [dbc.InputGroupText("Vea"),
                          dbc.Input(
                              id="Vae_right",
                              value=1.5,
@@ -123,7 +133,7 @@ form_right = html.Div([
                     ),
                     html.Br(),
                     dbc.InputGroup(
-                        [dbc.InputGroupAddon("Ytm", addon_type="prepend"),
+                        [dbc.InputGroupText("Ytm"),
                          dbc.Input(
                              id="Ytm_right",
                              value=1,
@@ -139,7 +149,7 @@ form_right = html.Div([
             dbc.Col(
                 html.Div([
                     dbc.InputGroup(
-                        [dbc.InputGroupAddon("TPP", addon_type="prepend"),
+                        [dbc.InputGroupText("TPP"),
                          dbc.Input(
                              id="TPP_right",
                              value=10,
@@ -151,7 +161,7 @@ form_right = html.Div([
                     ),
                     html.Br(),
                     dbc.InputGroup(
-                        [dbc.InputGroupAddon("TW", addon_type="prepend"),
+                        [dbc.InputGroupText("TW"),
                          dbc.Input(
                              id="TW_right",
                              value=70,
@@ -168,18 +178,19 @@ form_right = html.Div([
     html.Div(
         id='epsilon-selector-right',
         children=[
-            html.H4('Epsilon selector right ear'),
-            html.Label('Epsilon is used to compute the curve with the following formula:'),
+            html.H4('Epsilon selector right ear', style={"fontSize":"1.7vw"}),
+            html.Label('Epsilon is used to compute the curve with the following formula:', style={"fontSize":"0.9vw"}),
             html.Br(),
             html.Label('sqrt((r/self.epsilon)**2 + 1)', style={
                 'font': 'italic small-caps bold 15px/25px Georgia, serif',
+                "fontSize":"1.2vw"
             }),
             html.Br(),
             html.Label(
-                'Modifying the Epsilon value will modify the aspect of the curve,'
+                'Modifying the Epsilon value will modify the aspect of the curve, '
                 'but will not change the values entered. '
-                'By default it is 25 but for some more extreme values the curve can be not realist. '
-                'Play with it to get the most realistic curve.'),
+                'Default is 25 but for some more extreme values, you might need to '
+                'play with it to get the most realistic curve.', style={"fontSize":"0.9vw"}),
             dcc.Slider(
                 id='epsilon_right',
                 min=1,
@@ -187,7 +198,7 @@ form_right = html.Div([
                 value=25,
                 updatemode='drag',
             ),
-            html.Div(id='slider-output-container-right'),
+            html.Div(id='slider-output-container-right', style={"fontSize":"1.2vw"}),
         ], style={
             'padding': '5px',
             'margin': 'auto',
@@ -196,66 +207,54 @@ form_right = html.Div([
 ])
 
 app.layout = html.Div(children=[
-    dbc.Navbar(
-        [
-            html.A(
-                # Use row and col to control vertical alignment of logo / brand
-                dbc.Row(
-                    [
-                        dbc.Col(html.Img(src=PU_logo, height="80px")),
-                        dbc.Col(dbc.NavbarBrand("School of Audiology")),
-                    ],
-                    align="center",
-                    no_gutters=True,
+    dbc.Navbar([
+            dbc.Col([
+                html.A(
+                        dbc.Col(html.Img(src=PU_logo, width='100%', height="auto")),
+                    href="https://www.pacificu.edu/academics/colleges/college-health-professions/school-audiology"
+                         "/audiology-aud",
                 ),
-                href="https://www.pacificu.edu/academics/colleges/college-health-professions/school-audiology"
-                     "/audiology-aud",
+                ], width={"size": 1, "offset": 1}
             ),
-            dbc.Col(html.H1("Tympanometry", style={
-                'textAlign': 'center',
-                'color': 'white'
-            })),
-
-            dbc.Row(
-                [
-                    dbc.Col([
+            dbc.Col(
+                html.H1("Tympanometry", style={
+                    'textAlign': 'center',
+                    'color': 'white'
+                    }),
+                width=8,
+            ),
+            dbc.Col([
                         dbc.Button("About", id='about', color="primary", className="ml-2"),
                         dbc.Popover(
                             [
                                 dbc.PopoverHeader("About this tool"),
                                 dbc.PopoverBody(
                                     "Tympanogram creator tool built in collaboration between Dr. David Brown,"
-                                    " Cassidy Holbrook from Pacific University of Audiology and Loïc Bachelot"),
+                                    " Dr Cassidy Bachelot from Pacific University School of Audiology and Loïc Bachelot"),
                             ],
                             id="popover",
                             is_open=False,
                             target="about",
                             placement='bottom'
-                        )],
-                        width="auto",
-                    ),
+                        )
                 ],
-                no_gutters=True,
-                className="ml-auto flex-nowrap mt-3 mt-md-0",
-                align="center",
-            )
+                width=2,
+            ),
         ],
         color="dark",
         dark=True
     ),
+
+
     dbc.Row(
         [
             dbc.Col(
                 html.Div([
-                    dbc.Jumbotron([
-                        dbc.Alert("The limits for each field are still in discussion. This can lead to "
-                                  "mathematical errors if not properly used. Please double check your values if not "
-                                  "working. ", color="info"),
                         dbc.Tabs(
                             [
                                 dbc.Tab(form_left, label="Left ear"),
                                 dbc.Tab(form_right, label="Right ear", tab_style={
-                                    "margin-left": "auto"})
+                                    "marginleft": "auto"})
                             ]),
                         html.Hr(style={
                             'height': '2px',
@@ -263,7 +262,7 @@ app.layout = html.Div(children=[
                             'border': 'none',
                         }),
                         dbc.InputGroup(
-                            [dbc.InputGroupAddon("Negative pressure range", addon_type="prepend"),
+                            [dbc.InputGroupText("Negative pressure range", style={"fontSize":"1.2vw"}),
                              dbc.Input(
                                  id="NPa",
                                  value=-200,
@@ -277,13 +276,16 @@ app.layout = html.Div(children=[
                                 'marginRight': 'auto'
                             }
                         ),
-                        dbc.Button("Draw graph", color="primary", block=True, id="button"),
-                    ], style={
-                        'marginTop': '5px',
-                        'backgroundColor': '#404040'
-                    }),
-                ]), width=4),
-            dbc.Col(
+
+                        html.Div([
+                            dbc.Button("Draw graph", color="primary", id="button"),
+                            ],
+                            className="d-grid gap-2",
+                        )
+                    ]),
+                width=4
+            ),
+            dbc.Col([
                 html.Div([
                     dcc.Graph(
                         id='tympanogram-graph',
@@ -292,11 +294,15 @@ app.layout = html.Div(children=[
                             'padding': '5px',
                             'borderRadius': '5px',
                             'backgroundColor': 'white',
-                            'height': '80vh',
+                            'height': '70vh'
                         },
                     ),
-                ])
-
+                ]),
+                dbc.Alert("The limits for each field are still in discussion. This can lead to "
+                            "mathematical errors if not properly used. Please double check your values if not "
+                            "working. ", color="info", style={"fontSize":"2vh"}),
+                ],
+            width=8,
             ),
         ], style={
             'margin': '5px',
@@ -408,7 +414,7 @@ def update_graph(n_clicks, epsilon_l, epsilon_r, vea_l, tw_l, tpp_l, ytm_l, vea_
                 xref="paper",
                 yref="paper",
                 bordercolor='black',
-                borderwidth=1
+                borderwidth=1,
             ),
             dict(
                 x=0.9,
@@ -418,7 +424,7 @@ def update_graph(n_clicks, epsilon_l, epsilon_r, vea_l, tw_l, tpp_l, ytm_l, vea_
                 xref="paper",
                 yref="paper",
                 bordercolor='black',
-                borderwidth=1
+                borderwidth=1,
             )
         ],
         yaxis=dict(
@@ -428,7 +434,7 @@ def update_graph(n_clicks, epsilon_l, epsilon_r, vea_l, tw_l, tpp_l, ytm_l, vea_
         ),
         xaxis_title="Air pressure (daPa)",
 
-        # transition={ #transition isn't compatible with updating the annotations yet
+        # transition={ #transition isn't smooth with slider
         #     'duration': 500,
         # }
     )
